@@ -1,12 +1,11 @@
 import streamlit as st
 import random
-import re
 from collections import defaultdict
 
-# 한국어 끝말잇기 단어 데이터베이스 (간단한 버전)
+# 한국어 끝말잇기 단어 데이터베이스
 class KoreanWordDatabase:
     def __init__(self):
-        # 단어 데이터베이스 (단어: [품사, 뜻, 대체어])
+        # 단어 데이터베이스 확장 (단어: [품사, 뜻, 대체어])
         self.words = {
             "사과": ["명사", "과일의 일종 또는 잘못을 뉘우침", ["애플", "과일"]],
             "과일": ["명사", "나무에서 열리는 먹을 수 있는 열매", ["과실", "열매"]],
@@ -68,7 +67,7 @@ class KoreanWordDatabase:
             "량이": ["명사", "양의 준말", ["양", "동물"]],
             "이유": ["명사", "까닭", ["원인", "동기"]],
             "유리": ["명사", "투명한 재료", ["글라스", "유리"]],
-            "리본": ["名사", "장식용 끈", ["리본", "끈"]],
+            "리본": ["명사", "장식용 끈", ["리본", "끈"]],
             "본드": ["명사", "붙이는 물질", ["접착제", "풀"]],
             "드럼": ["명사", "악기의 일종", ["드럼", "타악기"]],
             "럼버": ["명사", "나무를 다루는 사람", ["목수", "나무장인"]],
@@ -102,6 +101,52 @@ class KoreanWordDatabase:
             "리본": ["명사", "장식용 끈", ["리본", "끈"]],
             "본인": ["명사", "자기 자신", ["자신", "본인"]],
             "인사": ["명사", "서로 만나서 하는 예절", ["인사", "예의"]],
+            "사다리": ["명사", "오르내리는 도구", ["사닥다리", "계단"]],
+            "다리": ["명사", "몸의 일부 또는 건물의 구조물", ["leg", "교량"]],
+            "리모컨": ["명사", "원격 조종기", ["리모콘", "조종기"]],
+            "컨디션": ["명사", "상태나 조건", ["컨디션", "상태"]],
+            "션샤인": ["명사", "햇빛", ["선샤인", "햇빛"]],
+            "인공": ["명사", "사람이 만든 것", ["인공", "인조"]],
+            "공원": ["명사", "공공 휴식 공간", ["공원", "park"]],
+            "원피스": ["명사", "여성 의상의 일종", ["원피스", "드레스"]],
+            "스토리": ["명사", "이야기", ["스토리", "이야기"]],
+            "리더": ["명사", "지도자", ["리더", "지도자"]],
+            "더하기": ["명사", "덧셈", ["더하기", "합산"]],
+            "기회": ["명사", "찬스", ["기회", "찬스"]],
+            "회의": ["명사", "모임", ["회의", "미팅"]],
+            "의사": ["명사", "병원에서 일하는 사람", ["의사", "닥터"]],
+            "사진": ["명사", "찰영한 그림", ["사진", "photo"]],
+            "진리": ["명사", "참된道理", ["진리", "真理"]],
+            "이론": ["명사", "학문적 주장", ["이론", "theory"]],
+            "논리": ["명사", "사고의 법칙", ["논리", "로직"]],
+            "이상": ["명사", "보통과 다른 상태", ["이상", "비정상"]],
+            "상자": ["명사", "물건을 담는 것", ["상자", "박스"]],
+            "자석": ["명사", "철을 끄는 물질", ["자석", "마그넷"]],
+            "석양": ["명사", "지는 해", ["석양", "일몰"]],
+            "양식": ["명사", "서양식 음식", ["양식", "서양식"]],
+            "식사": ["명사", "밥 먹는 것", ["식사", "밥"]],
+            "사랑": ["명사", "애정", ["사랑", "love"]],
+            # "유도" 단어 추가
+            "유도": ["명사", "어떤 방향으로 이끎", ["인도", "지도"]],
+            "도구": ["명사", "연장", ["도구", "연장"]],
+            "구름": ["명사", "하늘의 수증기", ["구름", "cloud"]],
+            "음식": ["명사", "먹는 것", ["음식", "food"]],
+            "식물": ["명사", "풀과 나무", ["식물", "plant"]],
+            "물질": ["명사", "물체를 이루는 것", ["물질", "substance"]],
+            "질문": ["명사", "묻는 것", ["질문", "question"]],
+            "문제": ["명사", "풀어야 할 것", ["문제", "question"]],
+            "제목": ["명사", "글의 이름", ["제목", "title"]],
+            "목표": ["명사", "달성하려는 것", ["목표", "goal"]],
+            "표정": ["명사", "얼굴 모양", ["표정", "expression"]],
+            "정원": ["명사", "마당", ["정원", "garden"]],
+            "원인": ["명사", "원흉", ["원인", "cause"]],
+            "인과": ["명사", "원인과 결과", ["인과", "causality"]],
+            "과자": ["명사", "간식", ["과자", "snack"]],
+            "자전거": ["명사", "두 바퀴 탈것", ["자전거", "bicycle"]],
+            "거미": ["명사", "절지동물", ["거미", "spider"]],
+            "미래": ["명사", "앞으로의 시간", ["미래", "future"]],
+            "래킷": ["명사", "라켓의 다른 표현", ["라켓", "racket"]],
+            "트리": ["명사", "나무", ["트리", "tree"]],
         }
         
         # 끝말을 시작으로 하는 단어 목록
@@ -125,12 +170,10 @@ class KoreanWordDatabase:
         return self.word_start.get(last_char, [])
     
     def get_random_word(self, last_char=None):
-        """랜덤 단어 반환 (마지막 글자가 주어지면 해당 글자로 시작하는 단어)"""
+        """랜덤 단어 반환"""
         if last_char:
             words = self.get_next_words(last_char)
-            if words:
-                return random.choice(words)
-            return None
+            return random.choice(words) if words else None
         else:
             return random.choice(list(self.words.keys()))
 
@@ -147,8 +190,6 @@ class WordRelayGame:
         self.winner = None
         self.history = []
         self.waiting_for_ai = False
-        self.ai_word = None
-        self.ai_message = ""
     
     def start_game(self):
         self.reset_game()
@@ -159,21 +200,17 @@ class WordRelayGame:
     
     def is_valid_next_word(self, word, last_char):
         """다음 단어가 유효한지 확인"""
-        # 1. 이미 사용된 단어인지 확인
+        if not word or len(word) < 2:
+            return False, "2글자 이상의 단어를 입력해주세요."
+        
         if word in self.used_words:
             return False, "이미 사용된 단어입니다."
         
-        # 2. 단어가 사전에 있는지 확인
         if not self.db.is_valid_word(word):
             return False, "사전에 없는 단어입니다."
         
-        # 3. 첫 글자가 이전 단어의 마지막 글자와 일치하는지 확인
         if word[0] != last_char:
             return False, f"'{last_char}'(으)로 시작하는 단어를 입력해주세요."
-        
-        # 4. 단어 길이가 2글자 이상인지 확인
-        if len(word) < 2:
-            return False, "2글자 이상의 단어를 입력해주세요."
         
         return True, "유효한 단어입니다."
     
@@ -195,13 +232,13 @@ class WordRelayGame:
         self.used_words.add(word)
         self.history.append(("플레이어", word))
         
-        # 플레이어가 'ㅇ'으로 끝나는 단어를 썼는지 확인
+        # 'ㅇ' 받침 체크
         if word[-1] == 'ㅇ':
             self.game_over = True
             self.winner = "AI"
             return True, f"'{word}'! 'ㅇ' 받침으로 끝나는 단어는 사용할 수 없습니다. AI 승리!"
         
-        # AI 차례를 준비
+        # AI 차례 준비
         self.waiting_for_ai = True
         return True, f"'{word}' - 좋은 단어입니다! AI가 생각 중..."
     
@@ -242,17 +279,23 @@ def main():
     st.set_page_config(
         page_title="AI와 끝말잇기",
         page_icon="🇰🇷",
-        layout="wide"
+        layout="centered"
     )
     
     st.title("🤖 AI와 끝말잇기 대결!")
     st.markdown("인공지능과 한국어 끝말잇기 게임을 즐겨보세요!")
     
-    # 게임 상태 초기화
+    # 게임 상태 초기화 (간소화된 방식)
     if 'game' not in st.session_state:
         st.session_state.game = WordRelayGame()
+    
+    if 'game_started' not in st.session_state:
         st.session_state.game_started = False
-        st.session_state.user_input = ""
+    
+    if 'last_input' not in st.session_state:
+        st.session_state.last_input = ""
+    
+    game = st.session_state.game
     
     # 사이드바
     with st.sidebar:
@@ -266,18 +309,16 @@ def main():
         5. 단어를 이을 수 없는 사람이 지게 됩니다
         """)
         
-        if st.button("🔄 새 게임 시작", type="primary"):
+        if st.button("🔄 새 게임 시작", type="primary", use_container_width=True):
             st.session_state.game_started = True
-            starting_word = st.session_state.game.start_game()
-            st.session_state.user_input = ""  # 입력 필드 초기화
+            starting_word = game.start_game()
+            st.session_state.last_input = ""
             st.success(f"🎯 게임 시작! AI: **'{starting_word}'**")
     
     # 메인 게임 영역
     if not st.session_state.game_started:
         st.info("👈 왼쪽 사이드바에서 **'새 게임 시작'** 버튼을 눌러 게임을 시작하세요!")
         return
-    
-    game = st.session_state.game
     
     # 현재 게임 상태 표시
     col1, col2 = st.columns(2)
@@ -299,8 +340,7 @@ def main():
     with col2:
         st.subheader("📋 사용된 단어")
         if game.used_words:
-            # 최근 10개 단어만 표시
-            recent_words = list(game.used_words)[-10:]
+            recent_words = list(game.used_words)[-8:]
             for word in recent_words:
                 st.write(f"- {word}")
         else:
@@ -310,38 +350,42 @@ def main():
     if not game.game_over:
         st.subheader("💬 당신의 차례")
         
-        # 사용자 입력
+        # 사용자 입력 (키를 고정해서 재사용 문제 방지)
         user_input = st.text_input(
             "다음 단어를 입력하세요:",
-            value=st.session_state.user_input,
-            key="user_input",
-            placeholder=f"'{game.current_word[-1]}'로 시작하는 단어를 입력하세요"
+            value=st.session_state.last_input,
+            key="word_input",
+            placeholder=f"'{game.current_word[-1]}'로 시작하는 단어를 입력하세요",
+            label_visibility="collapsed"
         )
         
-        col1, col2 = st.columns([1, 3])
+        col1, col2 = st.columns([1, 4])
         with col1:
-            if st.button("🚀 단어 제출", type="primary"):
-                if user_input.strip():
-                    success, message = game.player_turn(user_input.strip())
-                    if success:
-                        st.success(message)
-                        # AI 차례 자동 실행
-                        if game.waiting_for_ai and not game.game_over:
-                            ai_word, ai_message = game.ai_turn()
-                            if ai_word:
-                                st.info(ai_message)
-                            else:
-                                st.error(ai_message)
-                    else:
-                        st.error(message)
-                    # 입력 필드 초기화
-                    st.session_state.user_input = ""
-                else:
-                    st.warning("단어를 입력해주세요.")
+            submit_clicked = st.button("🚀 단어 제출", type="primary", use_container_width=True)
         
         with col2:
-            if st.button("🔄 입력 초기화"):
-                st.session_state.user_input = ""
+            if st.button("🗑️ 입력 초기화", use_container_width=True):
+                st.session_state.last_input = ""
+                st.rerun()
+        
+        if submit_clicked and user_input.strip():
+            success, message = game.player_turn(user_input.strip())
+            if success:
+                st.success(message)
+                # AI 차례 자동 실행
+                if game.waiting_for_ai and not game.game_over:
+                    ai_word, ai_message = game.ai_turn()
+                    if ai_word:
+                        st.info(ai_message)
+                    else:
+                        st.error(ai_message)
+                # 입력 필드 초기화
+                st.session_state.last_input = ""
+            else:
+                st.error(message)
+                st.session_state.last_input = ""  # 오류 시에도 입력 필드 초기화
+        elif submit_clicked and not user_input.strip():
+            st.warning("단어를 입력해주세요.")
     
     # 단어 정보 표시
     if game.current_word and not game.waiting_for_ai:
@@ -353,13 +397,11 @@ def main():
             st.markdown(f"**🏷️ 품사:** {pos}")
             st.markdown(f"**💡 뜻:** {meaning}")
             st.markdown(f"**🔄 대체어:** {', '.join(alternatives)}")
-        else:
-            st.info("해당 단어의 정보를 찾을 수 없습니다.")
     
     # 게임 히스토리
     st.subheader("📜 게임 히스토리")
     if game.history:
-        for i, (player, word) in enumerate(game.history[-10:]):  # 최근 10개만 표시
+        for i, (player, word) in enumerate(game.history[-8:]):
             if player == "AI":
                 st.write(f"{i+1}. 🤖 {player}: **{word}**")
             else:
